@@ -44,6 +44,30 @@ app.get("/transfer", (req, res) => {
 app.post("/transfer", (req, res) => {
     accounts[req.body.from].balance -= req.body.amount
     accounts[req.body.to].balance += parseInt(req.body.amount, 10)
+
+    const accountsJSON = JSON.stringify(accounts)
+
+    if (fs.existsSync(path.join(__dirname, "/json/accounts.json"))){
+        fs.copyFileSync(path.join(__dirname, "/json/accounts.json"), path.join(__dirname, "/json/accounts_backup.json"))
+    }
+    fs.writeFileSync(path.join(__dirname, "/json", "accounts.json"), accountsJSON, "utf8")
+
+    res.render("transfer", {message: "Transfer Completed"})
+})
+
+app.get("/payment", (req, res) => {
+    res.render("payment", {account: accounts.credit})
+})
+
+app.post("/payment", (req, res) => {
+    accounts["credit"].balance -= req.body.amount
+    accounts["credit"].available += parseInt(req.body.amount, 10)
+
+    const accountsJSON = JSON.stringify(accounts)
+
+    fs.writeFileSync(path.join(__dirname, "/json/accounts.json"), accountsJSON, "utf8")
+
+    res.render("payment", {message: "Payment Successful", account: accounts.credit})
 })
 
 app.listen(3000, () => {
