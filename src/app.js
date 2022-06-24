@@ -42,7 +42,8 @@ app.get("/transfer", (req, res) => {
 })
 
 app.post("/transfer", (req, res) => {
-
+    accounts[req.body.from].balance -= req.body.amount
+    accounts[req.body.to].balance += parseInt(req.body.amount, 10)
 })
 
 app.listen(3000, () => {
